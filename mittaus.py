@@ -72,7 +72,7 @@ title = ['1: resultantti m/s2', '2: resultantti m/s2']
 filename = 'result_' + time.strftime('%Y%m%d-%H%M%S') + '.csv'
 
 #pandas magic
-f = pd.DataFrame(columns=title, data=zip(sample_data_1, sample_data_2))
+f = pd.DataFrame(columns=title, data=zip(sensor_1.sample_data, sensor_2.sample_data))
 f.to_csv(filename, mode='a', float_format='%.3f', header=False, index=0)
     
 print('Written %d samples to %s in %.2f seconds' % (samples, filename[11:], (elapsed_time)))
