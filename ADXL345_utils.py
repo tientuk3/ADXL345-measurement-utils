@@ -49,7 +49,7 @@ class ADXL345:
         for i in range(self.block_size):
             temp_data.append(self.readAxes())
 
-        self.sample_data.append(temp_data)
+        self.sample_data.extend(temp_data)
 
 
     def configureDevice(self):
