@@ -1,10 +1,12 @@
 #import shit we need
 import time
 import numpy as np
+from numpy.fft import fftn
 import pandas as pd
 from gpiozero import InputDevice
 import smbus2
 import sys
+import matplotlib.pyplot as plt
 
 from ADXL345_utils import ADXL345
 
@@ -73,9 +75,38 @@ filename = 'result_' + time.strftime('%Y%m%d-%H%M%S') + '.csv'
 
 #pandas magic
 f = pd.DataFrame(columns=title, data=zip(sensor_1.sample_data, sensor_2.sample_data))
-f.to_csv(filename, mode='a', float_format='%.3f', header=False, index=0)
-    
+f.to_csv(filename, mode='a', float_format='%.3f', index=0)
+
 print('Written %d samples to %s in %.2f seconds' % (samples, filename[11:], (elapsed_time)))
+
+# fast fourier transform and plots
+data_1 = np.array(sample_data_1)
+data_2 = np.array(sample_data_2)
+
+y_1 = np.fft.rfft(data_1)
+y_2 = np.fft.rfft(data_2)
+freqs_1 = np.fft.rfftfreq(data_1.size)
+freqs_2 = np.fft.rfftfreq(data_2.size)
+
+plot1 = plt.figure(1)
+plt.plot(freqs_1[1:], np.abs(y_1[1:]))
+plt.title('Frequency domain, sensor 1')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Fourier coefficient')
+
+plot2 = plt.figure(2)
+plt.plot(freqs_2[1:], np.abs(y_2[1:]))
+plt.title('Frequency domain, sensor 2')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Fourier coefficient')
+
+plt.show(block=False)
+
+# save FFT results to another csv named 'FFT_<filename>'
+fft_data = np.column_stack((np.abs(freqs_1)[1:], np.abs(y_1)[1:], np.abs(y_2)[1:]))
+df = pd.DataFrame(fft_data, columns=['time', 'sensor_1', 'sensor_2'])
+df.to_csv('FFT_' + filename, mode='a', float_format='%.3f', index=0)
+
 
 
 
