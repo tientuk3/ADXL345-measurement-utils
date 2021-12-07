@@ -85,8 +85,8 @@ data_2 = np.array(sample_data_2)
 
 y_1 = np.fft.rfft(data_1)
 y_2 = np.fft.rfft(data_2)
-freqs_1 = np.fft.rfftfreq(data_1.size)
-freqs_2 = np.fft.rfftfreq(data_2.size)
+freqs_1 = np.fft.rfftfreq(data_1.size, 1.0/200.0)
+freqs_2 = np.fft.rfftfreq(data_2.size, 1.0/200.0)
 
 plot1 = plt.figure(1)
 plt.plot(freqs_1[1:], np.abs(y_1[1:]))
@@ -104,7 +104,7 @@ plt.show(block=False)
 
 # save FFT results to another csv named 'FFT_<filename>'
 fft_data = np.column_stack((np.abs(freqs_1)[1:], np.abs(y_1)[1:], np.abs(y_2)[1:]))
-df = pd.DataFrame(fft_data, columns=['time', 'sensor_1', 'sensor_2'])
+df = pd.DataFrame(fft_data, columns=['frequency', 'amp-sensor_1', 'amp-sensor_2'])
 df.to_csv('FFT_' + filename, mode='a', float_format='%.3f', index=0)
 
 
