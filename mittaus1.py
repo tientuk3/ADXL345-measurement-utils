@@ -108,6 +108,7 @@ plt.plot(freqs_1[1:], np.abs(y_1[1:]))
 plt.title('Frequency domain, sensor 1')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Fourier coefficient')
+plt.savefig('GRAPH_' + time.strftime('%Y%m%d-%H%M%S') + '.png')
 
 if len(args) > 2:
     print('DEBUG: FFT calculated. Plot should be shown now.')
