@@ -95,8 +95,8 @@ f.to_csv(filename, mode='a', float_format='%.3f', index=0)
 print('Written %d samples to %s in %.2f seconds' % (samples, filename[11:], (elapsed_time)))
 
 # fast fourier transform and plots
-data_1 = np.array(sample_data_1)
-data_2 = np.array(sample_data_2)
+data_1 = np.array(sensor_1.sample_data)
+data_2 = np.array(sensor_2.sample_data)
 
 y_1 = np.fft.rfft(data_1)
 #y_2 = np.fft.rfft(data_2)
