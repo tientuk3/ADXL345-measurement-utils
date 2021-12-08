@@ -17,7 +17,8 @@ block_size = 15 #samples read from FIFO once watermark interrupt occurs, max 31 
 devices = [0x53, 0x1d]
 
 #variables (sys args)
-aika = int(sys.argv[1]) #desired measurement time in seconds from command line argument
+args = sys.argv
+aika = int(args[1]) #desired measurement time in seconds from command line argument
 
 #DEBUG
 if debugmode:
@@ -45,7 +46,16 @@ print('GPIO14 set to receive FIFO watermark interrupt from sensor 2')
 print('---------------')
 alku = time.time()
 
+if len(args) > 2:
+    debugflag = True
+else:
+    debugflag = False
+
 while samples < (aika*200): #run for set time
+
+    if debugflag:
+        print('DEBUG Measurement started.')
+        debugflag = False
 
     #THIS IS FOR DEBUG PURPOSES ONLY: read FIFO buffer duty from sensor 1
     #if ((samples*0.01) % 10) == 0 and flag and samples > 1:
@@ -63,10 +73,16 @@ while samples < (aika*200): #run for set time
         sensor_1.readFIFO() #when interrupt occurs, read predetermined qty of samples from FIFO
         flag = True
         samples += block_size
+        if len(args) > 2: #debug mode
+            print('DEBUG: Interrupt signal from sensor 1! %d samples done.' % samples)
     
     #sensor 2
     if interrupt_2.is_active: #run when an interrupt occurs
         sensor_2.readFIFO() #when interrupt occurs, read predetermined qty of samples from FIFO
+        if len(args) > 2: #debug mode
+            print('DEBUG: Interrupt signal from sensor 2!')
+
+print('DEBUG: Measurement complete.')
 
 elapsed_time = (time.time()-alku)
 title = ['1: resultantti m/s2', '2: resultantti m/s2']
@@ -93,12 +109,18 @@ plt.title('Frequency domain, sensor 1')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Fourier coefficient')
 
+if len(args) > 2:
+    print('DEBUG: FFT calculated. Plot should be shown now.')
+
 plt.show(block=False)
 
 # save FFT results to another csv named 'FFT_<filename>'
 fft_data = np.column_stack((np.abs(freqs_1)[1:], np.abs(y_1)[1:]))
 df = pd.DataFrame(fft_data, columns=['frequency', 'amp-sensor_1'])
 df.to_csv('FFT_' + filename, mode='a', float_format='%.3f', index=0)
+
+if len(args) > 2:
+    print('DEBUG: FFT plot data saved to another CSV.')
 
 plt.show()
 
